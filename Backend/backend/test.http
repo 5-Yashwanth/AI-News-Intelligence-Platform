@@ -1,0 +1,2 @@
+### Import News
+POST http://localhost:8080/news/import

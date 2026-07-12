@@ -1,0 +1,40 @@
+### Get all news
+GET http://localhost:8080/news
+
+###
+
+### Create news
+POST http://localhost:8080/news
+Content-Type: application/json
+
+{
+    "title": "",
+    "source": "",
+    "category": "",
+    "url": "",
+    "publishedDate": "2026-07-12T20:00:00"
+}
+
+###
+
+###
+PUT http://localhost:8080/news/1
+Content-Type: application/json
+
+{
+    "title":"GPT-6 Released",
+    "source":"OpenAI",
+    "category":"AI",
+    "url":"https://openai.com/gpt6",
+    "publishedDate":"2026-07-12T20:30:00"
+}
+
+###
+
+###
+DELETE http://localhost:8080/news/5
+
+###
+
+###
+GET http://localhost:8080/news/category/AI
