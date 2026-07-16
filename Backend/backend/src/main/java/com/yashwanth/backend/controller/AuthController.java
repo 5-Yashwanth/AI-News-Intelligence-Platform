@@ -18,8 +18,9 @@ public class AuthController {
     @PostMapping("/register")
     public String register(@Valid @RequestBody RegisterRequest request) {
 
-        return authService.register(request);
+        System.out.println("========== REGISTER API CALLED ==========");
 
+        return authService.register(request);
     }
     @PostMapping("/login")
     public LoginResponse login(@RequestBody LoginRequest request) {
