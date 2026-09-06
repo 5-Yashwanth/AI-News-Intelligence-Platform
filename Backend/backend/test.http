@@ -21,11 +21,14 @@ POST http://localhost:8080/auth/login
 Content-Type: application/json
 
 {
-  "email": "yash2@gmail.com",
+  "email": "test1@gmail.com",
   "password": "123456"
 }
 
 ###
 
-GET http://localhost:8080/news
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ5YXNoMkBnbWFpbC5jb20iLCJpYXQiOjE3ODQwMTg2MTcsImV4cCI6MTc4NDEwNTAxN30._Ca7WV6W8CYpgQ7bPpGHqZEJ21gZgNdKuAeP2xo7QBw
+GET http://localhost:8080/history
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ0ZXN0MUBnbWFpbC5jb20iLCJpYXQiOjE3ODQ0NTkyMzQsImV4cCI6MTc4NDU0NTYzNH0.dc8ZVj5yv_hYcG-FDgF93DUaVyxO69Lb5vMCVmxSq0A
+
+###
+POST http://localhost:8080/news/1/regenerate-ai

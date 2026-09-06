@@ -102,4 +102,11 @@ public class NewsController {
         return newsService.getLatestNews();
 
     }
+    @PostMapping("/{id}/regenerate-ai")
+    public String regenerateAI(@PathVariable Long id) {
+
+        newsService.regenerateAI(id);
+
+        return "AI data regenerated successfully.";
+    }
 }

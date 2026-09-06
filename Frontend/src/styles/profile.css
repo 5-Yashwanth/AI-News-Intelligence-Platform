@@ -1,0 +1,43 @@
+.profile-card{
+
+    width:400px;
+
+    margin-top:40px;
+
+    background:white;
+
+    padding:40px;
+
+    border-radius:20px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.08);
+
+    text-align:center;
+
+}
+
+.avatar{
+
+    width:100px;
+
+    height:100px;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    color:white;
+
+    font-size:45px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}

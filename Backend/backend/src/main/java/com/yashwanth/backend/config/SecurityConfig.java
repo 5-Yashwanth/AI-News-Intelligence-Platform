@@ -27,8 +27,12 @@ public class SecurityConfig {
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/news/**").permitAll()
+                        .requestMatchers(
+                                "/auth/**",
+                                "/news/**",
+                                "/ai/**"
+                                ).permitAll()
+                        .requestMatchers("/analytics/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(

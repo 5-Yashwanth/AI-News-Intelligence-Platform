@@ -19,6 +19,9 @@ public class News {
     @Column(nullable = false)
     private String title;
 
+    @Column(length = 5000)
+    private String description;
+
     @NotBlank(message = "Source cannot be empty")
     private String source;
 
@@ -28,10 +31,15 @@ public class News {
     @NotBlank(message = "URL cannot be empty")
     private String url;
 
+    @Column(length = 1000)
+    private String imageUrl;
+
     private LocalDateTime publishedDate;
 
     @Column(length = 3000)
     private String summary;
 
     private String sentiment;
+    @Column(length = 1000)
+    private String keywords;
 }

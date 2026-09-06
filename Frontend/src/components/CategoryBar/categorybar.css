@@ -1,0 +1,49 @@
+.category-bar{
+
+    display:flex;
+
+    gap:15px;
+
+    overflow-x:auto;
+
+    margin-bottom:25px;
+
+    padding-bottom:10px;
+}
+
+.category-bar::-webkit-scrollbar{
+    display:none;
+}
+
+.category-btn{
+
+    border:none;
+
+    background:#1E293B;
+
+    color:white;
+
+    padding:10px 20px;
+
+    border-radius:25px;
+
+    cursor:pointer;
+
+    transition:.3s;
+
+    white-space:nowrap;
+
+    font-size:15px;
+}
+
+.category-btn:hover{
+
+    background:#2563EB;
+}
+
+.active{
+
+    background:#3B82F6;
+
+    font-weight:bold;
+}

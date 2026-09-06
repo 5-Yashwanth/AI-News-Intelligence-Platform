@@ -15,12 +15,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.yashwanth.backend.ai.OllamaService;
 
 @Service
 @RequiredArgsConstructor
 public class NewsService {
 
     private final NewsRepository newsRepository;
+    private final OllamaService ollamaService;
 
     public List<NewsResponse> getAllNews() {
 
@@ -34,26 +36,44 @@ public class NewsService {
 
     public NewsResponse addNews(NewsRequest request) {
 
-        News news = new News();
+    News news = new News();
 
-        news.setTitle(request.getTitle());
-        news.setSource(request.getSource());
-        news.setCategory(request.getCategory());
-        news.setUrl(request.getUrl());
-        news.setPublishedDate(request.getPublishedDate());
+    news.setTitle(request.getTitle());
+    news.setSource(request.getSource());
+    news.setCategory(request.getCategory());
+    news.setUrl(request.getUrl());
+    news.setPublishedDate(request.getPublishedDate());
 
-        News savedNews = newsRepository.save(news);
+    // Create text for AI analysis
+    String text = request.getTitle();
 
-        NewsResponse response = new NewsResponse();
+    // Generate AI Summary
+    try {
+        String summary = ollamaService.summarize(text);
+        news.setSummary(summary);
+    } catch (Exception e) {
+        System.out.println("AI Summary failed: " + e.getMessage());
+    }
 
-        response.setId(savedNews.getId());
-        response.setTitle(savedNews.getTitle());
-        response.setSource(savedNews.getSource());
-        response.setCategory(savedNews.getCategory());
-        response.setUrl(savedNews.getUrl());
-        response.setPublishedDate(savedNews.getPublishedDate());
+    // Generate Sentiment
+    try {
+        String sentiment = ollamaService.analyzeSentiment(text);
+        news.setSentiment(sentiment.trim());
+    } catch (Exception e) {
+        System.out.println("AI Sentiment failed: " + e.getMessage());
+    }
 
-        return response;
+    // Generate Keywords
+    try {
+        String keywords = ollamaService.extractKeywords(text);
+        news.setKeywords(keywords.trim());
+    } catch (Exception e) {
+        System.out.println("AI Keywords failed: " + e.getMessage());
+    }
+
+    News savedNews = newsRepository.save(news);
+
+    return convertToResponse(savedNews);
     }
     public NewsResponse updateNews(Long id, NewsRequest request) {
 
@@ -99,17 +119,22 @@ public class NewsService {
     }
     private NewsResponse convertToResponse(News news) {
 
-        NewsResponse response = new NewsResponse();
+    NewsResponse response = new NewsResponse();
 
-        response.setId(news.getId());
-        response.setTitle(news.getTitle());
-        response.setSource(news.getSource());
-        response.setCategory(news.getCategory());
-        response.setUrl(news.getUrl());
-        response.setPublishedDate(news.getPublishedDate());
+    response.setId(news.getId());
+    response.setTitle(news.getTitle());
+    response.setDescription(news.getDescription());
+    response.setSource(news.getSource());
+    response.setCategory(news.getCategory());
+    response.setUrl(news.getUrl());
+    response.setImageUrl(news.getImageUrl());
+    response.setPublishedDate(news.getPublishedDate());
 
-        return response;
+    response.setSummary(news.getSummary());
+    response.setSentiment(news.getSentiment());
+    response.setKeywords(news.getKeywords());
 
+    return response;
     }
     public List<News> searchNews(String keyword) {
 
@@ -129,4 +154,46 @@ public class NewsService {
             Sort.by(Sort.Direction.DESC, "publishedDate")
         );
     }
+    public void regenerateAI(Long id) {
+
+    News news = newsRepository.findById(id)
+        .orElseThrow(() ->
+            new ResourceNotFoundException(
+                "News not found with id " + id
+            )
+        );
+
+    String text =
+        news.getTitle() +
+        "\n\n" +
+        (news.getDescription() != null
+            ? news.getDescription()
+            : "");
+
+    try {
+        news.setSummary(
+            ollamaService.summarize(text)
+        );
+
+        news.setSentiment(
+            ollamaService.analyzeSentiment(text).trim()
+        );
+
+        news.setKeywords(
+            ollamaService.extractKeywords(text).trim()
+        );
+
+        newsRepository.save(news);
+
+    } catch (Exception e) {
+
+        System.out.println(
+            "AI regeneration failed: " + e.getMessage()
+        );
+
+        throw new RuntimeException(
+            "Failed to regenerate AI data"
+        );
+    }
+}
 }
