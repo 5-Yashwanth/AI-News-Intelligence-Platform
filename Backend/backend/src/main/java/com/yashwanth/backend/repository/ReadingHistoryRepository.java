@@ -12,4 +12,10 @@ public interface ReadingHistoryRepository
 
     List<ReadingHistory> findByUser(User user);
 
+    // ==========================================
+    // Get User Reading History - Newest First
+    // ==========================================
+
+    List<ReadingHistory> findByUserOrderByViewedAtDesc(User user);
+
 }

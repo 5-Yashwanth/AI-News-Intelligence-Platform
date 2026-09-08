@@ -1,16 +1,21 @@
 package com.yashwanth.backend.service;
 
 import com.yashwanth.backend.entity.News;
+import com.yashwanth.backend.entity.ReadingHistory;
 import com.yashwanth.backend.entity.User;
 import com.yashwanth.backend.entity.UserPreference;
+
 import com.yashwanth.backend.repository.NewsRepository;
+import com.yashwanth.backend.repository.ReadingHistoryRepository;
 import com.yashwanth.backend.repository.UserPreferenceRepository;
 import com.yashwanth.backend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -21,6 +26,8 @@ public class RecommendationService {
     private final UserRepository userRepository;
 
     private final UserPreferenceRepository userPreferenceRepository;
+
+    private final ReadingHistoryRepository readingHistoryRepository;
 
 
     // ==========================================
@@ -55,19 +62,52 @@ public class RecommendationService {
 
 
         // ==========================================
+        // Get Reading History
+        // ==========================================
+
+        List<ReadingHistory> readingHistory =
+                readingHistoryRepository
+                        .findByUserOrderByViewedAtDesc(user);
+
+
+        // ==========================================
+        // Get Recently Read Categories
+        // ==========================================
+
+        Set<String> recentlyReadCategories =
+                new HashSet<>();
+
+        for (ReadingHistory history : readingHistory) {
+
+            if (history.getNews() != null
+                    && history.getNews().getCategory() != null) {
+
+                recentlyReadCategories.add(
+                        history.getNews()
+                                .getCategory()
+                                .trim()
+                                .toLowerCase()
+                );
+            }
+        }
+
+
+        // ==========================================
         // Get All News - Newest First
         // ==========================================
 
         List<News> allNews =
-                newsRepository.findAllByOrderByPublishedDateDesc();
+                newsRepository
+                        .findAllByOrderByPublishedDateDesc();
 
 
         // ==========================================
-        // Filter According To Preferences
+        // Filter + Personalize News
         // ==========================================
 
         return allNews.stream()
 
+                // Keep only preferred categories
                 .filter(news ->
                         isCategoryEnabled(
                                 news.getCategory(),
@@ -75,7 +115,58 @@ public class RecommendationService {
                         )
                 )
 
+                // Put recently-read categories first
+                .sorted(
+                        (news1, news2) -> {
+
+                            boolean firstCategoryRead =
+                                    isRecentlyReadCategory(
+                                            news1.getCategory(),
+                                            recentlyReadCategories
+                                    );
+
+                            boolean secondCategoryRead =
+                                    isRecentlyReadCategory(
+                                            news2.getCategory(),
+                                            recentlyReadCategories
+                                    );
+
+                            if (firstCategoryRead
+                                    && !secondCategoryRead) {
+
+                                return -1;
+                            }
+
+                            if (!firstCategoryRead
+                                    && secondCategoryRead) {
+
+                                return 1;
+                            }
+
+                            return 0;
+                        }
+                )
+
                 .toList();
+    }
+
+
+    // ==========================================
+    // Check Recently Read Category
+    // ==========================================
+
+    private boolean isRecentlyReadCategory(
+            String category,
+            Set<String> recentlyReadCategories
+    ) {
+
+        if (category == null) {
+            return false;
+        }
+
+        return recentlyReadCategories.contains(
+                category.trim().toLowerCase()
+        );
     }
 
 

@@ -25,39 +25,62 @@ public class ReadingHistoryService {
 
     private final NewsRepository newsRepository;
 
+
+    // ==========================================
+    // Save Reading History
+    // ==========================================
+
     public void saveHistory(Long newsId) {
 
         Authentication authentication =
-            SecurityContextHolder.getContext().getAuthentication();
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
 
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
-            .orElseThrow();
+        User user =
+                userRepository.findByEmail(email)
+                        .orElseThrow();
 
-        News news = newsRepository.findById(newsId)
-            .orElseThrow();
+        News news =
+                newsRepository.findById(newsId)
+                        .orElseThrow();
 
-        ReadingHistory history = new ReadingHistory();
+        ReadingHistory history =
+                new ReadingHistory();
 
         history.setUser(user);
+
         history.setNews(news);
-        history.setViewedAt(LocalDateTime.now());
+
+        history.setViewedAt(
+                LocalDateTime.now()
+        );
 
         readingHistoryRepository.save(history);
-
     }
+
+
+    // ==========================================
+    // Get Reading History
+    // ==========================================
+
     public List<ReadingHistory> getHistory() {
 
         Authentication authentication =
-            SecurityContextHolder.getContext().getAuthentication();
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
 
         String email = authentication.getName();
 
-        User user = userRepository.findByEmail(email)
-            .orElseThrow();
+        User user =
+                userRepository.findByEmail(email)
+                        .orElseThrow();
 
-        return readingHistoryRepository.findByUser(user);
-
+        // Most recently viewed articles first
+        return readingHistoryRepository
+                .findByUserOrderByViewedAtDesc(user);
     }
 }
