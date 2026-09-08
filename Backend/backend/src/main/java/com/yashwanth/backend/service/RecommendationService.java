@@ -55,11 +55,11 @@ public class RecommendationService {
 
 
         // ==========================================
-        // Get All News
+        // Get All News - Newest First
         // ==========================================
 
         List<News> allNews =
-                newsRepository.findAll();
+                newsRepository.findAllByOrderByPublishedDateDesc();
 
 
         // ==========================================

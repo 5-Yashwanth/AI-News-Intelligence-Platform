@@ -19,6 +19,14 @@ public interface NewsRepository extends JpaRepository<News, Long> {
 
     List<News> findByTitleContainingIgnoreCase(String keyword);
 
+
+    // ==========================================
+    // Get News - Newest First
+    // ==========================================
+
+    List<News> findAllByOrderByPublishedDateDesc();
+
+
     @Query("""
         SELECT new com.yashwanth.backend.dto.CategoryStats(
             n.category,
