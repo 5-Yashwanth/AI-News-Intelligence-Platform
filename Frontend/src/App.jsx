@@ -8,6 +8,7 @@ import ArticleDetails from "./pages/ArticleDetails";
 import Profile from "./pages/Profile";
 import History from "./pages/History";
 import Analytics from "./pages/Analytics";
+import Preferences from "./pages/Preferences";
 
 function App() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/history" element={<History />} />
                 <Route path="/analytics" element={<Analytics />} />
+                <Route path="/preferences" element={<Preferences />} />
             </Routes>
         </BrowserRouter>
     );

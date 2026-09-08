@@ -1,0 +1,86 @@
+.preferences-page {
+    min-height: 100vh;
+    padding: 50px 20px;
+    background: #f8fafc;
+    text-align: center;
+}
+
+.preferences-page h1 {
+    color: #111827;
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.preferences-page > p {
+    color: #6b7280;
+    font-size: 16px;
+    margin-bottom: 35px;
+}
+
+.preferences-container {
+    max-width: 700px;
+    margin: 0 auto 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.preferences-container label {
+    background: white;
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 17px;
+    font-weight: 600;
+    color: #1f2937;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.preferences-container label:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+}
+
+.preferences-container input {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.preferences-page button {
+    padding: 13px 30px;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.preferences-page button:hover {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.preferences-page > p:last-child {
+    margin-top: 20px;
+    color: #16a34a;
+    font-weight: 600;
+}
+
+@media (max-width: 600px) {
+
+    .preferences-container {
+        grid-template-columns: 1fr;
+    }
+
+    .preferences-page h1 {
+        font-size: 28px;
+    }
+}

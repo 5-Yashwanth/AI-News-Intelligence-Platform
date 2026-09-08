@@ -28,12 +28,19 @@ public class NewsImportService {
 
         for (Article article : articles) {
 
+            // ==========================================
+            // Prevent Duplicate Articles
+            // ==========================================
+
             if (newsRepository.existsByUrl(article.getUrl())) {
+
                 System.out.println(
                     "Skipping duplicate article: " + article.getTitle()
                 );
+
                 continue;
             }
+
 
             News news = new News();
 
@@ -42,8 +49,6 @@ public class NewsImportService {
             news.setDescription(article.getDescription());
 
             news.setSource(article.getSource().getName());
-
-            news.setCategory("technology");
 
             news.setUrl(article.getUrl());
 
@@ -56,7 +61,7 @@ public class NewsImportService {
 
 
             // ==========================================
-            // Text sent to Ollama
+            // Text Sent to Ollama
             // ==========================================
 
             String text =
@@ -68,12 +73,14 @@ public class NewsImportService {
 
             // ==========================================
             // ONE AI REQUEST
+            // Summary + Sentiment + Keywords + Category
             // ==========================================
 
             try {
 
                 String aiResponse =
                     ollamaService.analyzeArticle(text);
+
 
                 System.out.println(
                     "AI Response for: " + article.getTitle()
@@ -120,11 +127,28 @@ public class NewsImportService {
                     extractSection(
                         aiResponse,
                         "KEYWORDS:",
-                        null
+                        "CATEGORY:"
                     );
 
                 news.setKeywords(
                     keywords.trim()
+                );
+
+
+                // ==========================================
+                // Extract Category
+                // ==========================================
+
+                String category =
+                    extractSection(
+                        aiResponse,
+                        "CATEGORY:",
+                        null
+                    );
+
+
+                news.setCategory(
+                    normalizeCategory(category)
                 );
 
 
@@ -134,6 +158,7 @@ public class NewsImportService {
                     "AI Analysis failed: " +
                     e.getMessage()
                 );
+
             }
 
 
@@ -164,6 +189,7 @@ public class NewsImportService {
         int start =
             response.indexOf(startMarker);
 
+
         if (start == -1) {
             return "";
         }
@@ -173,6 +199,7 @@ public class NewsImportService {
 
 
         int end;
+
 
         if (endMarker != null) {
 
@@ -196,5 +223,103 @@ public class NewsImportService {
         return response
             .substring(start, end)
             .trim();
+    }
+
+
+    // ==========================================
+    // Normalize AI Category
+    // ==========================================
+
+    private String normalizeCategory(String category) {
+
+        if (category == null) {
+            return "Software";
+        }
+
+
+        String value =
+            category
+                .trim()
+                .replace(".", "")
+                .replace("\"", "");
+
+
+        // ==========================================
+        // AI & ML
+        // ==========================================
+
+        if (value.equalsIgnoreCase("AI & ML")
+                || value.equalsIgnoreCase("AI and ML")
+                || value.equalsIgnoreCase("Artificial Intelligence")) {
+
+            return "AI & ML";
+        }
+
+
+        // ==========================================
+        // Software
+        // ==========================================
+
+        if (value.equalsIgnoreCase("Software")
+                || value.equalsIgnoreCase("Software Technology")) {
+
+            return "Software";
+        }
+
+
+        // ==========================================
+        // India News
+        // ==========================================
+
+        if (value.equalsIgnoreCase("India News")
+                || value.equalsIgnoreCase("Indian News")) {
+
+            return "India News";
+        }
+
+
+        // ==========================================
+        // Big Tech & Startups
+        // ==========================================
+
+        if (value.equalsIgnoreCase("Big Tech & Startups")
+                || value.equalsIgnoreCase("Big Tech and Startups")) {
+
+            return "Big Tech & Startups";
+        }
+
+
+        // ==========================================
+        // World & Business
+        // ==========================================
+
+        if (value.equalsIgnoreCase("World & Business")
+                || value.equalsIgnoreCase("World and Business")) {
+
+            return "World & Business";
+        }
+
+
+        // ==========================================
+        // Sports & Movies
+        // ==========================================
+
+        if (value.equalsIgnoreCase("Sports & Movies")
+                || value.equalsIgnoreCase("Sports and Movies")) {
+
+            return "Sports & Movies";
+        }
+
+
+        // ==========================================
+        // Unknown Category
+        // ==========================================
+
+        System.out.println(
+            "Unknown AI category: " + category
+        );
+
+
+        return "Software";
     }
 }

@@ -13,6 +13,7 @@ public class OllamaService {
 
     private final RestTemplate restTemplate;
 
+
     // ==========================================
     // Combined AI Analysis
     // ==========================================
@@ -39,6 +40,15 @@ public class OllamaService {
                 Return exactly 5 important keywords separated by commas.
                 Do not use numbering.
                 Do not add explanations.
+
+                CATEGORY:
+                Return ONLY one of:
+                AI & ML
+                Software
+                India News
+                Big Tech & Startups
+                World & Business
+                Sports & Movies
 
                 News Article:
                 """ + text;
