@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 
 import NewsService from "../services/NewsService";
-import PreferenceService from "../services/PreferenceService";
 
 import Sidebar from "../components/Sidebar/Sidebar";
 import Navbar from "../components/Navbar/Navbar";
@@ -38,49 +37,38 @@ function Dashboard() {
 
 
     // ==========================================
-    // User Preferences
-    // ==========================================
-
-    const [preferences, setPreferences] = useState({
-        aiMl: true,
-        software: true,
-        indiaNews: true,
-        bigTech: true,
-        worldBusiness: true,
-        sportsMovies: true
-    });
-
-
-    // ==========================================
-    // Load News + Preferences
+    // Load Personalized News
     // ==========================================
 
     useEffect(() => {
 
         fetchNews();
-        fetchPreferences();
 
     }, []);
 
 
     // ==========================================
-    // Fetch News
+    // Fetch Personalized News
     // ==========================================
 
     const fetchNews = async () => {
 
         try {
 
-            const response = await NewsService.getNews();
+            const response =
+                await NewsService.getRecommendedNews();
 
-            console.log("News:", response.data);
+            console.log(
+                "Recommended News:",
+                response.data
+            );
 
             setArticles(response.data);
 
         } catch (error) {
 
             console.error(
-                "Failed to fetch news:",
+                "Failed to fetch recommended news:",
                 error
             );
 
@@ -89,127 +77,6 @@ function Dashboard() {
             setLoading(false);
 
         }
-    };
-
-
-    // ==========================================
-    // Fetch Preferences
-    // ==========================================
-
-    const fetchPreferences = async () => {
-
-        try {
-
-            const data =
-                await PreferenceService.getPreferences();
-
-            console.log(
-                "User Preferences:",
-                data
-            );
-
-            setPreferences(data);
-
-        } catch (error) {
-
-            console.error(
-                "Failed to fetch preferences:",
-                error
-            );
-
-            // If preferences cannot be loaded,
-            // keep all categories enabled.
-
-            setPreferences({
-                aiMl: true,
-                software: true,
-                indiaNews: true,
-                bigTech: true,
-                worldBusiness: true,
-                sportsMovies: true
-            });
-        }
-    };
-
-
-    // ==========================================
-    // Check Whether Category Is Enabled
-    // ==========================================
-
-    const isCategoryEnabled = (category) => {
-
-        if (!category) {
-            return false;
-        }
-
-
-        const value = category
-            .trim()
-            .toLowerCase();
-
-
-        // ==========================================
-        // New AI Categories
-        // ==========================================
-
-        if (value === "ai & ml") {
-            return preferences.aiMl;
-        }
-
-
-        if (value === "software") {
-            return preferences.software;
-        }
-
-
-        if (value === "india news") {
-            return preferences.indiaNews;
-        }
-
-
-        if (value === "big tech & startups") {
-            return preferences.bigTech;
-        }
-
-
-        if (value === "world & business") {
-            return preferences.worldBusiness;
-        }
-
-
-        if (value === "sports & movies") {
-            return preferences.sportsMovies;
-        }
-
-
-        // ==========================================
-        // Old Categories
-        // ==========================================
-        // Existing database articles may still use
-        // the old category names.
-        //
-        // Keep them visible for now.
-        // ==========================================
-
-        if (
-            value === "technology" ||
-            value === "business" ||
-            value === "sports" ||
-            value === "health" ||
-            value === "science" ||
-            value === "entertainment"
-        ) {
-
-            return true;
-
-        }
-
-
-        // ==========================================
-        // Unknown Categories
-        // ==========================================
-
-        return true;
     };
 
 
@@ -231,15 +98,6 @@ function Dashboard() {
     const filteredArticles = articles
 
         // ======================================
-        // Preference Filter
-        // ======================================
-
-        .filter(article =>
-            isCategoryEnabled(article.category)
-        )
-
-
-        // ======================================
         // Category Bar Filter
         // ======================================
 
@@ -248,7 +106,6 @@ function Dashboard() {
             if (selectedCategory === "All") {
                 return true;
             }
-
 
             return (
                 article.category
@@ -327,7 +184,7 @@ function Dashboard() {
                             color: "#2563eb"
                         }}
                     >
-                    ✨ Your Personalized Feed
+                        ✨ Your Personalized Feed
                     </p>
 
                 </div>
